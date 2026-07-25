@@ -91,7 +91,7 @@ Your `.env.local` file has already been created with:
 Example:
 
 ```env
-MONGODB_URI=mongodb+srv://youruser:yourpassword@cluster.mongodb.net/brightpath
+MONGODB_URI=mongodb+srv://<username>:<password>@<cluster-url>/<database-name>
 ```
 
 ### 4. Start the development server
