@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { portfolioConfig } from "@/config/portfolio";
 import "./globals.css";
 
@@ -34,6 +36,8 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} h-full`}>
       <body className="min-h-full bg-white font-sans text-[#1d1d1f] antialiased">
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
