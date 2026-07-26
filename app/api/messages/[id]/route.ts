@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
+import { ZodError } from "zod";
 import { isAuthenticated } from "@/lib/auth";
 import { connectDB } from "@/lib/mongodb";
-import { Lead } from "@/models/lead";
-import { leadStatusUpdateSchema } from "@/lib/validations/lead";
-import { ZodError } from "zod";
+import { Message } from "@/models/message";
+import { messageStatusUpdateSchema } from "@/lib/validations/message";
 
 interface RouteContext {
   params: Promise<{ id: string }>;
 }
 
+/** Dashboard only: update a message's status. */
 export async function PATCH(request: Request, context: RouteContext) {
   try {
     const authenticated = await isAuthenticated();
@@ -18,25 +19,28 @@ export async function PATCH(request: Request, context: RouteContext) {
 
     const { id } = await context.params;
     const body: unknown = await request.json();
-    const validated = leadStatusUpdateSchema.parse(body);
+    const validated = messageStatusUpdateSchema.parse(body);
 
     await connectDB();
 
-    const lead = await Lead.findByIdAndUpdate(
+    const updated = await Message.findByIdAndUpdate(
       id,
       { status: validated.status },
-      { new: true },
+      { new: true, runValidators: true },
     );
 
-    if (!lead) {
-      return NextResponse.json({ message: "Lead not found." }, { status: 404 });
+    if (!updated) {
+      return NextResponse.json(
+        { message: "Message not found." },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json({
-      message: "Lead status updated.",
-      lead: {
-        id: lead._id.toString(),
-        status: lead.status,
+      message: "Message status updated.",
+      data: {
+        id: updated._id.toString(),
+        status: updated.status,
       },
     });
   } catch (error) {
@@ -47,9 +51,9 @@ export async function PATCH(request: Request, context: RouteContext) {
       );
     }
 
-    console.error("Lead update error:", error);
+    console.error("Message update error:", error);
     return NextResponse.json(
-      { message: "Unable to update lead status." },
+      { message: "Unable to update message status." },
       { status: 500 },
     );
   }

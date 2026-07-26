@@ -1,32 +1,80 @@
-import { type ButtonHTMLAttributes, type ReactNode } from "react";
+import type { ReactNode } from "react";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 
-type ButtonVariant = "primary" | "secondary" | "ghost";
+export type ButtonVariant = "primary" | "secondary" | "onDark" | "ghostOnDark";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
+interface BaseProps {
   children: ReactNode;
+  variant?: ButtonVariant;
+  className?: string;
+  /** Shows a trailing chevron — used on the secondary/text style. */
+  withChevron?: boolean;
 }
 
-const variantClasses: Record<ButtonVariant, string> = {
+interface ButtonAsButton extends BaseProps {
+  href?: undefined;
+  type?: "button" | "submit" | "reset";
+  onClick?: () => void;
+  disabled?: boolean;
+}
+
+interface ButtonAsLink extends BaseProps {
+  href: string;
+  type?: never;
+  onClick?: () => void;
+  disabled?: never;
+}
+
+type ButtonProps = ButtonAsButton | ButtonAsLink;
+
+const baseStyles =
+  "inline-flex items-center justify-center gap-1 rounded-full px-6 py-3 text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 md:text-base";
+
+const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-600",
+    "bg-[#0071e3] text-white hover:bg-[#0077ed] focus-visible:ring-[#0071e3] focus-visible:ring-offset-white",
   secondary:
-    "border border-blue-600 text-blue-700 hover:bg-blue-50 focus-visible:ring-blue-600",
-  ghost: "text-slate-700 hover:bg-slate-100 focus-visible:ring-slate-400",
+    "text-[#0071e3] hover:bg-[#0071e3]/8 focus-visible:ring-[#0071e3] focus-visible:ring-offset-white",
+  onDark:
+    "bg-white text-black hover:bg-white/90 focus-visible:ring-white focus-visible:ring-offset-black",
+  ghostOnDark:
+    "text-white hover:bg-white/10 focus-visible:ring-white focus-visible:ring-offset-black",
 };
 
-export function Button({
-  variant = "primary",
-  className = "",
-  children,
-  ...props
-}: ButtonProps) {
+export function Button(props: ButtonProps) {
+  const {
+    children,
+    variant = "primary",
+    className = "",
+    withChevron = variant === "secondary" || variant === "ghostOnDark",
+  } = props;
+
+  const classes = `${baseStyles} ${variantStyles[variant]} ${className}`;
+
+  const content = (
+    <>
+      <span>{children}</span>
+      {withChevron && <ChevronRight className="h-4 w-4" aria-hidden="true" />}
+    </>
+  );
+
+  if (props.href !== undefined) {
+    return (
+      <Link href={props.href} onClick={props.onClick} className={classes}>
+        {content}
+      </Link>
+    );
+  }
+
   return (
     <button
-      className={`inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${variantClasses[variant]} ${className}`}
-      {...props}
+      type={props.type ?? "button"}
+      onClick={props.onClick}
+      disabled={props.disabled}
+      className={classes}
     >
-      {children}
+      {content}
     </button>
   );
 }

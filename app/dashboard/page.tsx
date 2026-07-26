@@ -1,13 +1,19 @@
 import { redirect } from "next/navigation";
+import { CircleAlert } from "lucide-react";
+import type { Metadata } from "next";
 import { isAuthenticated } from "@/lib/auth";
 import { connectDB } from "@/lib/mongodb";
-import { Lead } from "@/models/lead";
+import { Message } from "@/models/message";
 import {
-  DashboardView,
-  type DashboardLead,
-} from "@/components/dashboard/DashboardView";
-import { AlertCircle } from "lucide-react";
-import type { LeadStatus } from "@/config/business";
+  MessagesDashboard,
+  type DashboardMessage,
+} from "@/components/dashboard/MessagesDashboard";
+import type { MessageStatus } from "@/config/portfolio";
+
+export const metadata: Metadata = {
+  title: "Messages",
+  robots: { index: false, follow: false },
+};
 
 export default async function DashboardPage() {
   const authenticated = await isAuthenticated();
@@ -15,52 +21,48 @@ export default async function DashboardPage() {
     redirect("/dashboard/login");
   }
 
-  let leads: DashboardLead[] = [];
+  let messages: DashboardMessage[] = [];
   let errorMessage: string | null = null;
 
   try {
     await connectDB();
-    const results = await Lead.find().sort({ createdAt: -1 }).lean();
+    const results = await Message.find().sort({ createdAt: -1 }).lean();
 
-    leads = results.map((lead) => ({
-      id: lead._id.toString(),
-      fullName: lead.fullName,
-      email: lead.email,
-      phone: lead.phone || undefined,
-      company: lead.company || undefined,
-      message: lead.message,
-      status: lead.status as LeadStatus,
-      createdAt: lead.createdAt.toISOString(),
+    messages = results.map((item) => ({
+      id: item._id.toString(),
+      name: item.name,
+      email: item.email,
+      company: item.company || undefined,
+      subject: item.subject || undefined,
+      message: item.message,
+      status: item.status as MessageStatus,
+      createdAt: item.createdAt.toISOString(),
     }));
   } catch (error) {
     console.error("Dashboard fetch error:", error);
-    if (
+    errorMessage =
       error instanceof Error &&
       error.message.includes("MONGODB_URI is not defined")
-    ) {
-      errorMessage =
-        "MongoDB is not configured yet. Add your connection string to .env.local.";
-    } else {
-      errorMessage = "Unable to load leads. Please try again later.";
-    }
+        ? "MongoDB is not configured yet. Add your connection string to .env.local."
+        : "Unable to load messages. Please try again later.";
   }
 
   if (errorMessage) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-        <div className="max-w-md rounded-2xl border border-red-200 bg-white p-8 text-center shadow-sm">
-          <AlertCircle
+      <div className="flex min-h-screen items-center justify-center bg-[#f5f5f7] px-6">
+        <div className="max-w-md rounded-2xl border border-red-200 bg-white p-8 text-center">
+          <CircleAlert
             className="mx-auto h-10 w-10 text-red-600"
             aria-hidden="true"
           />
-          <h1 className="mt-4 text-xl font-bold text-slate-900">
+          <h1 className="mt-4 text-xl font-semibold text-[#1d1d1f]">
             Dashboard unavailable
           </h1>
-          <p className="mt-2 text-slate-600">{errorMessage}</p>
+          <p className="mt-2 text-[#6e6e73]">{errorMessage}</p>
         </div>
       </div>
     );
   }
 
-  return <DashboardView leads={leads} />;
+  return <MessagesDashboard messages={messages} />;
 }

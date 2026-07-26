@@ -1,195 +1,177 @@
-# BrightPath Consulting Website
+# Khant Zayar Paing — Personal Portfolio
 
-A complete business website with a customer enquiry form and a protected lead dashboard, built for the AI Business Website Builder workshop.
+A personal portfolio website for **Khant Zayar Paing**, Digital Media Buying & Planning Manager, with a contact form and a private inbox for reviewing the messages it collects.
 
 ## Project overview
 
-This application helps **BrightPath Consulting** present their services online and collect customer enquiries. Submitted enquiries are saved to MongoDB and can be reviewed in a private dashboard.
+The site works as a living résumé and portfolio: it presents Khant's experience, selected work, awards, and skills, and makes it easy for recruiters and clients to get in touch. Messages sent through the contact form are saved to MongoDB and can be reviewed in a password-protected dashboard.
 
-## Business information
+## Who it's for
 
-- **Business:** BrightPath Consulting
-- **Focus:** Helping small and medium-sized businesses improve operations and adopt practical digital tools
-- **Location:** Bangkok, Thailand
-- **Contact:** hello@brightpath.example | 02-000-0000
+- **Recruiters and hiring managers** looking for a paid media / performance marketing specialist
+- **Clients** looking for freelance media buying and planning support
+- **Khant**, who uses the private dashboard to read and track incoming messages
 
 ## Pages
 
 ### Home (`/`)
 
-The public website includes these sections in order:
+One long page with a sticky navigation bar. Sections, in order:
 
 1. Navigation
-2. Hero
-3. Customer Problem
-4. Benefits
-5. Services
-6. How It Works
-7. Customer Enquiry form
-8. Footer
+2. Hero (name, title, tagline, headshot, calls to action)
+3. Brands & organizations I've worked with
+4. About (long-form bio, smaller headshot, key numbers)
+5. What I Do (expertise cards with tools)
+6. Skills & Tools (skill bars + MarTech stack)
+7. Experience (timeline with achievements)
+8. Selected Work (filterable project grid)
+9. Awards & Recognition
+10. Education & Certifications
+11. Testimonials — *hidden until real quotes are added; nothing is invented*
+12. Let's Work Together (contact details + message form)
+13. Closing call to action and footer
 
-### Dashboard Login (`/dashboard/login`)
+### Dashboard login (`/dashboard/login`)
 
-Password-protected login for the business owner.
+Password gate for the private inbox.
 
-### Lead Dashboard (`/dashboard`)
+### Messages dashboard (`/dashboard`)
 
-Review customer enquiries, search leads, filter by status, and update lead status.
+Private inbox showing every contact-form message, newest first.
 
 ## Main features
 
-- Responsive, professional business website
-- Customer enquiry form with validation
-- Enquiries saved to MongoDB Atlas
-- Protected lead dashboard
-- Search and filter leads
-- Update lead status (new, contacted, qualified, closed)
-- Loading, success, and error states
+- Fully responsive, Apple-inspired design (light sections with black feature bands)
+- Contact form with name, email, company, subject, and message fields
+- Validation on both the browser and the server, with clear loading, success, and error states
+- Messages saved to MongoDB Atlas
+- Private dashboard with total / new / replied summary cards
+- Search by name, email, or company; filter by status
+- Update a message's status (new, read, replied, archived)
+- Subtle scroll animations that switch off for visitors who prefer reduced motion
+- Keyboard-accessible navigation with visible focus outlines
+
+Messages are never deleted from the dashboard by design — archiving keeps a record.
 
 ## Technology stack
 
-- Next.js (App Router)
-- TypeScript
-- Tailwind CSS
-- MongoDB Atlas
-- Mongoose
-- Zod
+- Next.js 16 (App Router) with TypeScript
+- Tailwind CSS v4
+- MongoDB Atlas with Mongoose
+- Zod for validation
 - Lucide React icons
+
+## Where the content lives
+
+Every editable piece of text, along with the design tokens, sits in one file:
+
+```text
+config/portfolio.ts
+```
+
+Edit that file to change the bio, stats, experience, projects, awards, education, contact details, or form copy — no need to hunt through components.
 
 ## Local setup
 
 ### 1. Install dependencies
 
-Dependencies should already be installed. If needed, run:
-
 ```bash
 npm install
 ```
 
-### 2. Configure environment variables
+### 2. Environment files
 
-Two environment files are included:
+Two files are used:
 
-- `.env.example` — safe placeholders (can be committed to Git)
-- `.env.local` — your local secrets (never commit this file)
+- `.env.example` — safe placeholders, committed to Git
+- `.env.local` — your real secrets, never committed
 
-Your `.env.local` file has already been created with:
+If `.env.local` is missing, copy the example and fill it in:
 
-- A secure random `AUTH_SECRET`
-- A workshop dashboard password (`admin123`)
-- A placeholder for your MongoDB connection string
-
-**Important:** The default dashboard password is for local workshop use only. Change it before publishing a real application.
-
-### 3. Add your MongoDB connection string
-
-1. Open `.env.local` in your project folder.
-2. Find the line that starts with `MONGODB_URI=`.
-3. Replace `PASTE_YOUR_MONGODB_CONNECTION_STRING_HERE` with your connection string from MongoDB Atlas.
-4. Save the file.
-
-Example:
-
-```env
-MONGODB_URI=mongodb+srv://<username>:<password>@<cluster-url>/<database-name>
+```bash
+cp .env.example .env.local
 ```
 
-### 4. Start the development server
+Generate a long random `AUTH_SECRET` with:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+### 3. Start the development server
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Then open [http://localhost:3000](http://localhost:3000).
 
 ## MongoDB Atlas setup
 
-Follow these steps to connect your application to MongoDB Atlas:
-
 1. **Create an account** at [mongodb.com/atlas](https://www.mongodb.com/atlas).
-2. **Create a free cluster** (M0 tier is fine for this workshop).
-3. **Create a database user** with a username and password. Save these credentials.
-4. **Configure network access:**
-   - For local development, add your current IP address, or
-   - Allow access from anywhere (`0.0.0.0/0`) for testing only.
-5. **Get your connection string:**
-   - Click **Connect** on your cluster
-   - Choose **Drivers**
-   - Copy the connection string
-6. **Update the connection string:**
-   - Replace `<username>` and `<password>` with your database user credentials
-   - Add a database name at the end (for example: `brightpath`)
-7. **Save it in `.env.local`** as `MONGODB_URI`.
-8. **Restart the development server** after saving.
+2. **Create a free cluster** (the M0 free tier is enough).
+3. **Create a database user** with a username and password, and save both.
+4. **Configure network access** — add the IP address of the computer or server that will connect. Nothing can reach the database until its IP is on this list.
+5. **Get the connection string** — click **Connect**, choose **Drivers**, and copy the string.
+6. **Fill in the string** — replace the username and password placeholders with your database user's details, and add a database name at the end, for example `portfolio`.
+7. **Save it in `.env.local`** as the value of `MONGODB_URI`.
+8. **Restart the development server** so the new value is picked up.
 
 ## Required environment variables
 
 | Variable | Purpose |
 |----------|---------|
 | `MONGODB_URI` | MongoDB Atlas connection string |
-| `DASHBOARD_PASSWORD` | Password for dashboard login |
-| `AUTH_SECRET` | Secret used to sign session cookies |
+| `DASHBOARD_PASSWORD` | Password for the dashboard login |
+| `AUTH_SECRET` | Long random secret used to sign the session cookie |
+| `NEXT_PUBLIC_SITE_URL` | Optional. The site's public address, used for link previews. Defaults to `https://kzyp.vercel.app`. |
 
-## How to test the enquiry form
+These values stay on the server. They are never sent to the browser.
 
-1. Make sure your MongoDB connection string is saved in `.env.local`.
-2. Start the dev server with `npm run dev`.
-3. Open [http://localhost:3000](http://localhost:3000).
-4. Scroll to **Book a Free Consultation**.
-5. Fill in the form and click **Submit Enquiry**.
-6. You should see: *"Thank you for your enquiry. We will contact you shortly."*
+## How the contact form works
 
-## How to access the dashboard
+1. A visitor fills in the form in the **Let's Work Together** section and clicks **Send Message**.
+2. The browser checks that name, email, and message are filled in correctly.
+3. The details are sent to the site's own API, which validates them again on the server.
+4. The message is saved to MongoDB with the status `new`.
+5. The visitor sees: *"Thanks — your message has been sent. I'll be in touch soon."*
 
-1. Open [http://localhost:3000/dashboard/login](http://localhost:3000/dashboard/login).
-2. Enter the dashboard password from `.env.local` (default workshop password: `admin123`).
+To test it locally, make sure `MONGODB_URI` is set, run `npm run dev`, submit the form, then open the dashboard to see the message.
+
+## How to open the dashboard
+
+1. Go to [http://localhost:3000/dashboard/login](http://localhost:3000/dashboard/login) (or `/dashboard/login` on the live site).
+2. Enter the password from `DASHBOARD_PASSWORD`.
 3. Click **Sign in**.
-4. You will see all submitted enquiries.
+
+Visiting `/dashboard` without signing in redirects to the login page. **Log out** ends the session.
 
 ## How to change the dashboard password
 
 1. Open `.env.local`.
 2. Change the value of `DASHBOARD_PASSWORD`.
-3. Save the file.
-4. Restart the development server.
+3. Save the file and restart the development server.
+
+On Vercel, change it in the project's environment variables and redeploy.
 
 ## How to deploy to Vercel
 
-1. Push your project to GitHub (do not commit `.env.local`).
-2. Go to [vercel.com](https://vercel.com) and import your repository.
-3. Add these environment variables in Vercel project settings:
-   - `MONGODB_URI`
-   - `DASHBOARD_PASSWORD` (use a strong password, not `admin123`)
-   - `AUTH_SECRET` (use a long random value)
-4. Deploy the project.
-5. In MongoDB Atlas, add Vercel's IP addresses or allow access from anywhere for the deployed app.
+1. Push the project to GitHub. `.env.local` is git-ignored and must never be committed.
+2. Go to [vercel.com](https://vercel.com) and import the repository.
+3. Add the same environment variables in the Vercel project settings: `MONGODB_URI`, `DASHBOARD_PASSWORD` (use a strong password), and `AUTH_SECRET` (a long random value).
+4. Deploy.
+5. In MongoDB Atlas, make sure network access allows connections from the deployed app.
 
 ## Production authentication warning
 
-This workshop uses a simple password-based login suitable for learning and prototyping.
-
-For a real production application, use a complete authentication solution such as:
-
-- [Auth.js](https://authjs.dev/)
-- [Clerk](https://clerk.com/)
-- [Keycloak](https://www.keycloak.org/)
-- Your organization's identity provider
-
-## Editing business content
-
-Most website text is stored in one file:
-
-```text
-config/business.ts
-```
-
-Edit this file to change headlines, services, contact details, and other content without searching through many components.
+The dashboard uses a single shared password and a signed session cookie. That is fine for a personal inbox, but for anything with multiple users or sensitive data, use a full authentication solution such as [Auth.js](https://authjs.dev/), [Clerk](https://clerk.com/), or your organization's identity provider.
 
 ## Scripts
 
 ```bash
-npm run dev      # Start development server
-npm run build    # Create production build
-npm run start    # Start production server
+npm run dev      # Start the development server
+npm run build    # Create a production build
+npm run start    # Start the production server
 npm run lint     # Run ESLint
 ```
