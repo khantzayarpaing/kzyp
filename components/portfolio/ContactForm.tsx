@@ -52,6 +52,12 @@ const fieldClasses =
 
 const labelClasses = "block text-sm font-medium text-[#1d1d1f]";
 
+// Company and Subject sit side by side, and their labels wrap to a different
+// number of lines at narrower widths — which would leave one input a line lower
+// than the other. Reserving two lines of label height keeps both inputs, and any
+// errors beneath them, on the same baseline.
+const pairedLabelClasses = `${labelClasses} sm:min-h-10`;
+
 export function ContactForm() {
   const { contact } = portfolioConfig;
   const [fields, setFields] = useState<ContactFormFields>(emptyForm);
@@ -220,7 +226,7 @@ export function ContactForm() {
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <label htmlFor="company" className={labelClasses}>
+          <label htmlFor="company" className={pairedLabelClasses}>
             Company / organization{" "}
             <span className="font-normal text-[#6e6e73]">(optional)</span>
           </label>
@@ -243,7 +249,7 @@ export function ContactForm() {
         </div>
 
         <div>
-          <label htmlFor="subject" className={labelClasses}>
+          <label htmlFor="subject" className={pairedLabelClasses}>
             Subject{" "}
             <span className="font-normal text-[#6e6e73]">(optional)</span>
           </label>
