@@ -3,6 +3,8 @@
  * Nothing here may be invented: all facts come from Khant's résumé.
  */
 
+import type { ToolLogoId } from "@/components/ui/icons/tool-logos";
+
 export interface Stat {
   value: string;
   label: string;
@@ -43,6 +45,26 @@ export interface Service {
 export interface Skill {
   name: string;
   proficiency: number;
+}
+
+/**
+ * A tool in the MarTech grid. `logo` names one of the inlined marks in
+ * components/ui/icons/tool-logos.ts; tools without a mark fall back to a
+ * neutral monogram tile so the grid stays consistent.
+ */
+export interface MartechTool {
+  name: string;
+  logo?: ToolLogoId;
+}
+
+/**
+ * A client or organization in the "worked with" marquee. `logo` is a path
+ * under /public — left undefined until a licensed logo file is supplied, in
+ * which case the brand renders as a text chip.
+ */
+export interface Brand {
+  name: string;
+  logo?: string;
 }
 
 export interface ExperienceItem {
@@ -123,14 +145,14 @@ export interface PortfolioConfig {
   navigation: NavItem[];
   primaryCta: string;
   secondaryCta: string;
-  brands: { heading: string; items: string[] };
+  brands: { heading: string; items: Brand[] };
   about: { heading: string };
   services: { heading: string; items: Service[] };
   skills: {
     heading: string;
     items: Skill[];
     stackHeading: string;
-    stack: string[];
+    stack: MartechTool[];
   };
   experience: { heading: string; items: ExperienceItem[] };
   work: { heading: string; items: ProjectItem[] };
@@ -195,16 +217,19 @@ export const portfolioConfig: PortfolioConfig = {
 
   brands: {
     heading: "Brands & organizations I've worked with",
+    // Add `logo: "/brands/<file>.svg"` per brand once licensed logo files are
+    // dropped into public/brands — the marquee swaps the text chip for the mark
+    // automatically.
     items: [
-      "Hyatt",
-      "InterContinental",
-      "Samsung",
-      "Banyan Group",
-      "Abbott",
-      "Chang",
-      "Mega Lifesciences",
-      "UNICEF",
-      "UNFPA",
+      { name: "Hyatt" },
+      { name: "InterContinental" },
+      { name: "Samsung" },
+      { name: "Banyan Group" },
+      { name: "Abbott" },
+      { name: "Chang" },
+      { name: "Mega Lifesciences" },
+      { name: "UNICEF" },
+      { name: "UNFPA" },
     ],
   },
 
@@ -267,20 +292,22 @@ export const portfolioConfig: PortfolioConfig = {
       { name: "Cross-functional Team Leadership", proficiency: 90 },
     ],
     stackHeading: "MarTech stack",
+    // Ahrefs and Semrush are listed separately so each carries its own mark.
     stack: [
-      "Google Ads",
-      "Meta Ads Manager",
-      "TikTok Ads Manager",
-      "GA4",
-      "Google Tag Manager",
-      "Looker Studio",
-      "Ahrefs / SEMrush",
-      "Supermetrics",
-      "HubSpot",
-      "Salesforce",
-      "ActiveCampaign",
-      "Brevo",
-      "TableCheck",
+      { name: "Google Ads", logo: "googleAds" },
+      { name: "Meta Ads Manager", logo: "meta" },
+      { name: "TikTok Ads Manager", logo: "tiktok" },
+      { name: "GA4", logo: "ga4" },
+      { name: "Google Tag Manager", logo: "gtm" },
+      { name: "Looker Studio", logo: "looker" },
+      { name: "Semrush", logo: "semrush" },
+      { name: "Ahrefs" },
+      { name: "Supermetrics" },
+      { name: "HubSpot", logo: "hubspot" },
+      { name: "Salesforce" },
+      { name: "ActiveCampaign" },
+      { name: "Brevo", logo: "brevo" },
+      { name: "TableCheck", logo: "tablecheck" },
     ],
   },
 
